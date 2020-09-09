@@ -1,0 +1,56 @@
+CREATE OR REPLACE FUNCTION ord_disc_sf1
+  (p_id NUMBER)
+  RETURN NUMBER
+ IS
+  lv_sub_num bb_basket.subtotal%TYPE;
+BEGIN
+  SELECT subtotal
+   INTO lv_sub_num
+   FROM bb_basket
+   WHERE idbasket = p_id;
+  IF lv_sub_num > 100 THEN
+    RETURN lv_sub_num * .20;
+  ELSIF lv_sub_num > 50 THEN
+    RETURN lv_sub_num * .10;
+  ELSIF lv_sub_num > 25 THEN
+    RETURN lv_sub_num * .05;
+  ELSE
+    RETURN 0;
+  END IF;
+END;
+
+CREATE OR REPLACE FUNCTION ord_disc_sf2
+  (p_id NUMBER)
+  RETURN NUMBER
+ IS
+  lv_sub_num bb_basket.subtotal%TYPE;
+  lv_disc_num NUMBER(5,2) := 0;
+BEGIN
+  SELECT subtotal
+   INTO lv_sub_num
+   FROM bb_basket
+   WHERE idbasket = p_id;
+  IF lv_sub_num > 100 THEN
+    lv_disc_num := lv_sub_num * .20;
+  ELSIF lv_sub_num > 50 THEN
+    lv_disc_num := lv_sub_num * .10;
+  ELSIF lv_sub_num > 25 THEN
+    lv_disc_num := lv_sub_num * .05;
+  END IF;
+  RETURN lv_disc_num;
+END;
+
+
+DECLARE
+  lv_id_num NUMBER(1) := 3;
+  lv_disc_num NUMBER(5,2);
+BEGIN
+  lv_disc_num := ord_disc_sf1(lv_id_num);
+  DBMS_OUTPUT.PUT_LINE(lv_disc_num);
+END;
+
+SELECT idbasket, subtotal, ord_disc_sf1(idbasket)
+  FROM bb_basket;
+--- OR ---
+SELECT idbasket, subtotal, ROUND(ord_disc_sf1(idbasket),2)
+  FROM bb_basket;

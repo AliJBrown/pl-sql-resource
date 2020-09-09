@@ -1,0 +1,26 @@
+CREATE PROCEDURE dyn_cust_sp
+   (p_col IN VARCHAR2,
+    p_value IN VARCHAR2)
+ IS
+  lv_cursor INTEGER;
+  lv_query VARCHAR2(150);
+  lv_rows NUMBER(1);
+  lv_id bb_shopper.idShopper%TYPE;
+  lv_last bb_shopper.lastname%TYPE;
+BEGIN
+  lv_cursor := DBMS_SQL.OPEN_CURSOR;
+  lv_query := 'SELECT idShopper, lastname
+                 FROM bb_shopper 
+                 WHERE ' || p_col || ' = :ph_value';
+  DBMS_SQL.PARSE(lv_cursor, lv_query, DBMS_SQL.NATIVE);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 1, lv_id);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 2, lv_last,25);
+  DBMS_SQL.BIND_VARIABLE(lv_cursor, ':ph_value', p_value);
+  lv_rows := DBMS_SQL.EXECUTE(lv_cursor);
+  WHILE (DBMS_SQL.FETCH_ROWS(lv_cursor) > 0) LOOP
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 1, lv_id);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 2, lv_last);
+    DBMS_OUTPUT.PUT_LINE(lv_id||'-'||lv_last);
+  END LOOP;
+  DBMS_SQL.CLOSE_CURSOR(lv_cursor);
+END;

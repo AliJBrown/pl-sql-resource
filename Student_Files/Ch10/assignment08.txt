@@ -1,0 +1,8 @@
+CREATE PROCEDURE dyn_addcol_sp
+   (p_col IN VARCHAR2,
+    p_table IN VARCHAR2,
+    p_type IN VARCHAR2)
+ IS
+BEGIN
+ EXECUTE IMMEDIATE '  ';
+END;

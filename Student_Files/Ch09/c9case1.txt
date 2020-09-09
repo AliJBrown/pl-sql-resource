@@ -1,0 +1,57 @@
+CREATE OR REPLACE TRIGGER bb_deptchg_trg
+  BEFORE UPDATE OF idDepartment ON bb_department
+  FOR EACH ROW
+ BEGIN
+   UPDATE bb_product
+    SET idDepartment = :NEW.idDepartment
+    WHERE idDepartment = :OLD.idDepartment;
+ END;
+
+CREATE OR REPLACE TRIGGER bb_prodaudit_trg
+  AFTER UPDATE ON bb_product
+  FOR EACH ROW
+ BEGIN
+   INSERT INTO bb_paudit
+    VALUES(USER, SYSDATE, :OLD.idProduct,:NEW.idproduct);
+ END;
+
+CREATE OR REPLACE TRIGGER bb_reorder_trg
+   AFTER UPDATE OF stock ON bb_product
+   FOR EACH ROW 
+DECLARE
+  v_onorder_num NUMBER(4);
+ BEGIN
+  If :NEW.stock <= :NEW.reorder THEN
+   SELECT SUM(qty)
+    INTO v_onorder_num
+    FROM bb_product_request
+    WHERE idProduct = :NEW.idProduct
+     AND dtRecd IS NULL;
+   IF v_onorder_num IS NULL THEN v_onorder_num := 0; END IF;
+   IF v_onorder_num = 0 THEN
+     INSERT INTO bb_product_request (idRequest, idProduct, dtRequest, qty)
+       VALUES (bb_prodreq_seq.NEXTVAL, :NEW.idProduct, SYSDATE, :NEW.reorder);
+   END IF;
+  END IF;
+END;
+
+CREATE OR REPLACE TRIGGER logon_trg
+  AFTER LOGON ON SCHEMA 
+ BEGIN
+   INSERT INTO bb_audit_logon
+     VALUES (USER, SYSDATE);
+ END;
+
+CREATE OR REPLACE TRIGGER bb_ckname_trg
+   AFTER UPDATE ON bb_product
+ DECLARE
+  lv_cnt_num NUMBER(2);
+ BEGIN
+   SELECT COUNT(idProduct)
+    INTO lv_cnt_num
+    FROM bb_product
+    WHERE idProductname = NULL;
+   IF lv_cnt_num > 0 THEN
+    RAISE_APPLICATION_ERROR(-20105,'Product Names left blank!');
+   END IF;
+END;

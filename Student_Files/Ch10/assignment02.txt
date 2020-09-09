@@ -1,0 +1,9 @@
+CREATE PROCEDURE bb_jobtest
+ (job IN NUMBER,
+  msg IN VARCHAR2)
+ IS
+BEGIN
+   INSERT INTO bb_jobq (jobnum, msg)
+     VALUES (job,msg);
+   COMMIT;
+END;

@@ -1,0 +1,13 @@
+CREATE OR REPLACE VIEW prod_option_vu
+ AS SELECT idproduct, p.productname, idoption,
+            d.optionname, c.categoryname
+  FROM bb_product p JOIN bb_productoption o
+          USING(idproduct) 
+       JOIN bb_productoptiondetail d 
+          USING(idoption) 
+       JOIN bb_productoptioncategory c
+          USING(idoptioncategory);
+   
+
+INSERT INTO prod_option_vu (idproduct, productname, idoption)
+  VALUES (bb_prodid_seq.NEXTVAL, 'New Product', 2);

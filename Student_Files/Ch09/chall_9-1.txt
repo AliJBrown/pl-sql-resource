@@ -1,0 +1,37 @@
+CREATE OR REPLACE TRIGGER bb_qty_trg
+   AFTER INSERT OR DELETE OR UPDATE OF quantity ON bb_basketitem
+   FOR EACH ROW
+BEGIN
+ IF INSERTING THEN
+  UPDATE bb_basket
+   SET quantity = quantity + :NEW.quantity
+   WHERE idbasket = :NEW.idbasket;
+ ELSIF DELETING THEN
+  UPDATE bb_basket
+   SET quantity = quantity - :OLD.quantity
+   WHERE idbasket = :OLD.idbasket;
+ ELSIF UPDATING THEN
+  UPDATE bb_basket
+   SET quantity = quantity + (:NEW.quantity - :OLD.quantity)
+   WHERE idbasket = :NEW.idbasket;
+ END IF;
+END;
+
+--Test with Basket 4
+--Add
+INSERT INTO bb_basketitem (idbasketitem, idproduct, idbasket, quantity)
+  VALUES (44, 6, 4, 2);
+--increase qty of item
+UPDATE bb_basketitem
+  SET quantity = 8
+  WHERE idbasketitem = 44;
+--decrease qty of item
+UPDATE bb_basketitem
+  SET quantity = 4
+  WHERE idbasketitem = 44;
+--remove item
+DELETE FROM bb_basketitem
+  WHERE idbasketitem = 44;
+
+ROLLBACK;
+ALTER TRIGGER bb_qty_trg DISABLE;

@@ -1,0 +1,32 @@
+CREATE OR REPLACE FUNCTION tot_lbs_sf
+  (p_id NUMBER)
+  RETURN NUMBER
+ IS
+  CURSOR cur_items IS
+   SELECT option1, quantity
+    FROM bb_basketitem
+    WHERE idbasket = p_id;
+  lv_lbs_num NUMBER(4,1) := 0;
+BEGIN
+  FOR rec_items IN cur_items LOOP
+   IF rec_items.option1 IS NOT NULL THEN
+     IF rec_items.option1 = 1 THEN
+        lv_lbs_num := lv_lbs_num + (rec_items.quantity * .5);
+     ELSE 
+        lv_lbs_num := lv_lbs_num + rec_items.quantity;
+     END IF;
+   END IF;
+  END LOOP;
+  RETURN lv_lbs_num;
+END;
+
+DECLARE
+  lv_id_num NUMBER(1) := 3;
+  lv_lbs_num NUMBER(4,1);
+BEGIN
+  lv_lbs_num := tot_lbs_sf(lv_id_num);
+  DBMS_OUTPUT.PUT_LINE(lv_lbs_num);
+END;
+
+SELECT idbasket, tot_lbs_sf(idbasket)
+  FROM bb_basket;

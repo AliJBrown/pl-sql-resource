@@ -1,0 +1,34 @@
+CREATE OR REPLACE PROCEDURE except_log_sp
+ IS
+  tbl_buffer DBMS_OUTPUT.CHARARR;
+  lv_lines_num INTEGER := 3;
+  lv_pu_txt VARCHAR2(25);
+  lv_app_txt VARCHAR2(20);
+  lv_mess_txt VARCHAR2(50);
+BEGIN
+ DBMS_OUTPUT.GET_LINES(tbl_buffer, lv_lines_num);
+ lv_pu_txt := tbl_buffer(1);
+ lv_app_txt := tbl_buffer(2);
+ lv_mess_txt := tbl_buffer(3);
+ INSERT INTO bb_log_excepts (id, pu, app, edate, descrip)
+  VALUES(logid_seq.NEXTVAL, lv_pu_txt, lv_app_txt, SYSDATE, lv_mess_txt);
+ COMMIT;
+END;
+/
+CREATE OR REPLACE PROCEDURE bsk_query_sp
+ (p_bsk_num IN NUMBER)
+ IS
+  lv_shop_num bb_basket.idShopper%TYPE;
+  lv_tot_num bb_basket.total%TYPE;
+BEGIN
+  SELECT idShopper, total
+   INTO lv_shop_num, lv_tot_num
+   FROM bb_basket
+   WHERE idBasket = p_bsk_num;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+   DBMS_OUTPUT.PUT_LINE('bsk_query_sp');
+   DBMS_OUTPUT.PUT_LINE('Order system');
+   DBMS_OUTPUT.PUT_LINE('No basket data retrieved');
+   except_log_sp;
+END;

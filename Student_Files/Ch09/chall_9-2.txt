@@ -1,0 +1,10 @@
+CREATE OR REPLACE TRIGGER bb_prodopt_trg
+  INSTEAD OF INSERT ON prod_option_vu
+  FOR EACH ROW
+BEGIN
+ INSERT INTO bb_product (idproduct, productname)
+  VALUES (bb_prodid_seq.NEXTVAL, 'New Product');
+ INSERT INTO bb_productoption (idproductoption, idoption, 
+                                idproduct)
+  VALUES (bb_poption_seq.NEXTVAL, 2, bb_prodid_seq.CURRVAL);
+END;

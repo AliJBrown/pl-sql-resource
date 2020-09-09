@@ -1,0 +1,26 @@
+CREATE OR REPLACE FUNCTION grind_sf
+  (p_option NUMBER)
+  RETURN VARCHAR2
+ IS
+  lv_gdesc_txt VARCHAR2(10);
+BEGIN
+  IF p_option = 3 THEN
+     lv_gdesc_txt := 'Whole Bean';
+  ELSIF p_option = 4 THEN
+     lv_gdesc_txt := 'Ground';
+  ELSE
+     lv_gdesc_txt := 'N/A';
+  END IF;
+  RETURN lv_gdesc_txt;
+END;
+
+DECLARE
+  lv_option_num NUMBER(1) := 4;
+  lv_desc_txt VARCHAR2(10);
+BEGIN
+  lv_desc_txt := grind_sf(lv_option_num);
+  DBMS_OUTPUT.PUT_LINE(lv_desc_txt);
+END;
+
+SELECT idbasketitem, grind_sf(option2)
+  FROM bb_basketitem;

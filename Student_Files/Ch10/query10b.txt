@@ -1,0 +1,52 @@
+CREATE OR REPLACE PROCEDURE dyn_query2_sp 
+   (p_col IN ARRAY,
+    p_op IN ARRAY,
+    p_value IN ARRAY)
+ IS
+  lv_query LONG;
+  lv_status INTEGER;
+  lv_cursor INTEGER;
+  lv_key VARCHAR2(8) := ' WHERE ';
+  lv_col1 NUMBER(2);
+  lv_col2 VARCHAR2(25);
+  lv_col3 NUMBER(6,2);
+  lv_col4 NUMBER(5,1);
+BEGIN
+  --Open cursor
+  lv_cursor := DBMS_SQL.OPEN_CURSOR;
+  --Build first part of query
+  lv_query := 'SELECT idProduct, productname, price, stock
+                FROM bb_product';
+  --Loop to add each criteria provided in the parameter arrays
+  -- to complete the query
+  FOR i IN 1..p_col.COUNT LOOP
+    lv_query := lv_query || lv_key || p_col(i) || ' ' || 
+                                p_op(i) || ' ' || ':ph_value'|| i;
+    lv_key := ' AND ';
+  END LOOP;
+  --Parse the statement
+  DBMS_SQL.PARSE(lv_cursor, lv_query, DBMS_SQL.NATIVE);
+  --Identify datatypes of data items returned
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 1, lv_col1);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 2, lv_col2, 25);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 3, lv_col3);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 4, lv_col4);
+  --Associate each placeholder with a parameter for the 
+  -- WHERE clause values
+  FOR i IN 1..p_col.COUNT LOOP
+    DBMS_SQL.BIND_VARIABLE(lv_cursor, ':ph_value'||i, p_value(i));
+  END LOOP;
+  --Execute the query
+  lv_status := DBMS_SQL.EXECUTE(lv_cursor);
+  --Fetch all rows returned and put values in PL/SQL variables
+  -- Output data to screen to verify
+  WHILE (DBMS_SQL.FETCH_ROWS(lv_cursor) > 0) LOOP
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 1, lv_col1);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 2, lv_col2);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 3, lv_col3);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 4, lv_col4);
+    DBMS_OUTPUT.PUT_LINE(lv_col1||' '||lv_col2||' '||lv_col3||' '||lv_col4);
+  END LOOP;
+  --Close cursor
+  DBMS_SQL.CLOSE_CURSOR(lv_cursor);
+END;

@@ -1,0 +1,19 @@
+DECLARE
+ fh UTL_FILE.FILE_TYPE;
+ CURSOR cur_shop IS
+  Select idshopper, ROUND(AVG(quantity),2) avgqty, 
+                    ROUND(AVG(total),2) avgamt, SUM(total) amt
+   FROM bb_basket
+   WHERE orderplaced = 1
+   GROUP BY idshopper;
+BEGIN
+ fh := UTL_FILE.FOPEN('ORA_FILES','cust_sales.txt', 'w');
+ FOR rec_shop IN cur_shop LOOP
+   UTL_FILE.PUT_LINE(fh, rec_shop.idshopper||','||rec_shop.avgqty ||
+                      ','||rec_shop.avgamt||','||rec_shop.amt);
+ END LOOP;
+ UTL_FILE.FCLOSE(fh);
+EXCEPTION
+  WHEN OTHERS THEN
+   dbms_output.put_line(SQLERRM);
+END;

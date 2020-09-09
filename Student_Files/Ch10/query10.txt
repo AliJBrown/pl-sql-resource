@@ -1,0 +1,32 @@
+CREATE OR REPLACE PROCEDURE dyn_query1_sp 
+   (p_col IN VARCHAR2,
+    p_value IN VARCHAR2)
+ IS
+  lv_query LONG;
+  lv_status INTEGER;
+  lv_cursor INTEGER;
+  lv_col1 NUMBER(2);
+  lv_col2 VARCHAR2(25);
+  lv_col3 NUMBER(6,2);
+  lv_col4 NUMBER(5,1);
+BEGIN
+  lv_cursor := DBMS_SQL.OPEN_CURSOR;
+  lv_query := 'SELECT idProduct, productname, price, stock
+                FROM bb_product
+                WHERE '|| p_col ||' = :ph_value';
+  DBMS_SQL.PARSE(lv_cursor, lv_query, DBMS_SQL.NATIVE);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 1, lv_col1);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 2, lv_col2, 25);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 3, lv_col3);
+  DBMS_SQL.DEFINE_COLUMN(lv_cursor, 4, lv_col4);
+  DBMS_SQL.BIND_VARIABLE(lv_cursor, ':ph_value', p_value);
+  lv_status := DBMS_SQL.EXECUTE(lv_cursor);
+  IF (DBMS_SQL.FETCH_ROWS(lv_cursor) > 0) THEN
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 1, lv_col1);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 2, lv_col2);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 3, lv_col3);
+    DBMS_SQL.COLUMN_VALUE(lv_cursor, 4, lv_col4);
+    DBMS_OUTPUT.PUT_LINE(lv_col1||' '||lv_col2||' '||lv_col3||' '||lv_col4);
+  END IF;
+  DBMS_SQL.CLOSE_CURSOR(lv_cursor);
+END;
