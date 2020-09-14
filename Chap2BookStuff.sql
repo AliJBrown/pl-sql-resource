@@ -46,12 +46,82 @@
 
 
 -- BASIC LOOP
-DECLARE
-    lv_cnt_num NUMBER(2) := 1;
-BEGIN
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(lv_cnt_num);
-        EXIT WHEN lv_cnt_num >=5;
-        lv_cnt_num := lv_cnt_num + 1;
-    END LOOP;
-END;
+-- DECLARE
+--     lv_cnt_num NUMBER(2) := 1;
+-- BEGIN
+--     LOOP
+--         DBMS_OUTPUT.PUT_LINE(lv_cnt_num);
+--         EXIT WHEN lv_cnt_num >=5;
+--         lv_cnt_num := lv_cnt_num + 1;
+--     END LOOP;
+-- END;
+
+--BASIC LOOP (runs at least once)
+-- DECLARE
+--     lv_cnt_num NUMBER(2) :=1;
+-- BEGIN
+--     LOOP
+--         DBMS_OUTPUT.PUT_LINE(lv_cnt_num);
+--         lv_cnt_num := lv_cnt_num + 1;
+--         EXIT WHEN lv_cnt_num >=5;
+--     END LOOP;
+-- END;
+
+--LOOP WITH EXIT STATEMENT
+-- DECLARE
+--     lv_cnt_num NUMBER(2) :=1;
+-- BEGIN
+--     LOOP
+--         DBMS_OUTPUT.PUT_LINE(lv_cnt_num);
+--         IF lv_cnt_num >= 5 THEN
+--             EXIT;
+--         ELSE
+--             lv_cnt_num := lv_cnt_num + 1;
+--     END LOOP;
+-- END;
+
+
+--WHILE LOOP
+-- DECLARE
+--     lv_cnt_num NUMBER(2) :=1;
+-- BEGIN
+--     WHILE lv_cnt_num <= 5 LOOP
+--         DBMS_OUTPUT.PUT_LINE(lv_cnt_num);
+--         lv_cnt_num := lv_cnt_num + 1;
+--     END LOOP;
+-- END;
+
+
+--FOR LOOP
+-- BEGIN
+--     FOR i IN 1..5 LOOP
+--         DBMS_OUTPUT.PUT_LINE(i);
+--     END LOOP;
+-- END;
+
+
+--CONTINUE STATEMENT
+-- DECLARE
+--     lv_cnt_num NUMBER(3) := 0;
+-- BEGIN
+--     FOR i IN 1..25 LOOP
+--         CONTINUE WHEN MOD(i,5) <> 0;
+--         DBMS_OUTPUT.PUT_LINE('Loop i value' || i);
+--         lv_cnt_num := lv_cnt_num + 1;
+--     END LOOP;
+--     DBMS_OUTPUT.PUT_LINE('Final execution count: ' || lv_cnt_num);
+-- END;
+
+
+--NESTED LOOP
+-- BEGIN
+--     FOR oi IN 1..3 LOOP
+--         DBMS_OUTPUT.PUT_LINE('Outer Loop');
+--         FOR ii IN 1..2 LOOP
+--             DBMS_OUTPUT.PUT_LINE("Inner Loop");
+--         END LOOP;
+--     END LOOP;
+-- END;
+
+
+
