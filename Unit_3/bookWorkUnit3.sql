@@ -49,7 +49,10 @@
 --anchored data type (%type) pulls from database data type instead of declaring it
 --
 -- DECLARE
---   lv_basket_num bb_basket.idBasket%TYPE;
+--   lv_basket_num bb_basket.idBasSELECT idproj, projname, COUNT(idpledge) "pledges", SUM(pledgeamt) "totalamt", AVG(pledgeamt) "avgamt"
+    FROM dd_project JOIN dd_pledge USING (idproj)
+    GROUP BY idproj,projname
+    HAVING idproj = 501;ket%TYPE;
 --   lv_created_date bb_basket.dtcreated%TYPE;
 --   lv_qty_num bb_basket.quantity%TYPE;
 --   lv_sub_num bb_basket.subtotal%TYPE;
@@ -349,7 +352,7 @@
 --GOTO statements skip executable code and go to a specified label
 --labels <<example_1>>
 --statement GOTO example_1
--- 
+--
 -- BEGIN
 --   IF lv_rows_num = 0 THEN
 --     GOTO insert_row;
